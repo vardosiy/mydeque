@@ -4,6 +4,7 @@
 
 DECLARE_OOP_TEST(default_constructor)
 {
+	std::string a;
    MyDeque<int> test;
    assert(test.size() == 0);
    assert(test.empty());
