@@ -2,6 +2,8 @@
 #include "testlib.hpp"
 #include <deque>
 
+#include <vector>
+
 DECLARE_OOP_TEST(default_constructor)
 {
 	std::string a;
