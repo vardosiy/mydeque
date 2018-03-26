@@ -43,7 +43,7 @@ class MyDeque
 
 	void resetIndexes();
 
-	void deleteElements();
+	void deleteAllElements();
 
 	void freeMemoryBlocks();
 
@@ -54,6 +54,10 @@ class MyDeque
 	void previousIndex(int & _index, int & _blockIndex, int _action);
 
 	T * getElement(unsigned char * _pElement) const;
+
+	void deleteElement(unsigned char * _pElement);
+
+	void allocateDirectory();
 
 	std::pair<int, int> calculateIndex(int _index) const; // first => blockIndex, second => elementIndex
 
@@ -235,7 +239,7 @@ MyDeque< T >::MyDeque()
 {
 	resetIndexes();
 
-	m_data = new unsigned char*[m_directorySize];
+	allocateDirectory();
 }
 
 /**************************************************************************************************************/
@@ -262,7 +266,7 @@ MyDeque< T >::MyDeque(std::initializer_list< U > _list)
 /**************************************************************************************************************/
 
 template< typename T >
-template< typename U >
+	template< typename U >
 MyDeque< T >::MyDeque(const MyDeque< U > & _deque)
 	:MyDeque()
 {
@@ -288,7 +292,6 @@ MyDeque< T >::MyDeque(MyDeque< T > && _deque)
 	m_frontAllocatedBlockIndex(_deque.m_frontAllocatedBlockIndex)
 {
 	m_data = _deque.m_data;
-
 	_deque.m_data = nullptr;
 
 	_deque.resetIndexes();
@@ -305,20 +308,15 @@ MyDeque< T >::~MyDeque()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template< typename T >
-template< typename U >
+	template< typename U >
 MyDeque< T > & MyDeque< T >::operator = (const MyDeque< U > & _deque)
 {
 	if ( (const void *) (this) == (const void *) (&_deque) )
 		return *this;
 
-	resetData();
-	resetIndexes();
+	clear();
 
-	m_directorySize = 1;
-	m_data = new unsigned char*[m_directorySize];
-
-	m_frontAllocatedBlockIndex = m_frontBlockIndex;
-	m_backAllocatedBlockIndex = m_backBlockIndex;
+	allocateDirectory();
 
 	copyElements(_deque);
 
@@ -333,14 +331,9 @@ MyDeque< T > & MyDeque< T >::operator = (const MyDeque< T > & _deque)
 	if ( this == &_deque )
 		return *this;
 
-	resetData();
-	resetIndexes();
+	clear();
 
-	m_directorySize = 1;
-	m_data = new unsigned char*[m_directorySize];
-
-	m_frontAllocatedBlockIndex = m_frontBlockIndex;
-	m_backAllocatedBlockIndex = m_backBlockIndex;
+	allocateDirectory();
 
 	copyElements(_deque);
 
@@ -410,8 +403,7 @@ void MyDeque< T >::pop_back()
 	if ( empty() )
 		throw std::logic_error(Messages::EmptyDeque);
 
-	if ( std::is_class<T>::value )
-		getElement(m_data[m_backBlockIndex] + m_backIndex * sizeof(T))->~T();
+	deleteElement(m_data[m_backBlockIndex] + m_backIndex * sizeof(T));
 
 	previousIndex(m_backIndex, m_backBlockIndex, actions::REDUCE);
 }
@@ -436,8 +428,7 @@ void MyDeque< T >::pop_front()
 	if ( empty() )
 		throw std::logic_error(Messages::EmptyDeque);
 
-	if ( std::is_class<T>::value )
-		getElement(m_data[m_frontBlockIndex] + m_frontIndex * sizeof(T))->~T();
+	deleteElement(m_data[m_frontBlockIndex] + m_frontIndex * sizeof(T));
 
 	nextIndex(m_frontIndex, m_backBlockIndex, actions::REDUCE);
 }
@@ -450,7 +441,7 @@ void MyDeque< T >::clear()
 	if ( empty() )
 		return;
 
-	deleteElements();
+	resetData();
 
 	resetIndexes();
 }
@@ -674,7 +665,7 @@ void MyDeque< T >::previousIndex(int & _index, int & _blockIndex, int _action)
 template< typename T >
 void MyDeque< T >::resetData()
 {
-	deleteElements();
+	deleteAllElements();
 
 	freeMemoryBlocks();
 }
@@ -699,7 +690,7 @@ void MyDeque<T>::resetIndexes()
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::deleteElements()
+void MyDeque< T >::deleteAllElements()
 {
 	if ( empty() )
 		return;
@@ -734,12 +725,14 @@ void MyDeque< T >::freeMemoryBlocks()
 		delete[] m_data[i];
 
 	delete[] m_data;
+
+	m_data = nullptr; // for cases, when client does nothing after calling clear() func, for correct deleting
 }
 
 /**************************************************************************************************************/
 
 template< typename T >
-template< typename U >
+	template< typename U >
 void MyDeque< T >::copyElements(const MyDeque< U > & _deque)
 {
 	int size = _deque.size();
@@ -884,8 +877,6 @@ std::pair<int, int> MyDeque< T >::calculateIndex(int _index) const
 template< typename T >
 void MyDeque< T >::allocateMemory()
 {
-	// TODO: mb without allocating memory at the begining
-
 	if ( m_frontBlockIndex == -1 || m_backBlockIndex == m_directorySize )
 		grow();
 
@@ -912,6 +903,23 @@ template< typename T >
 inline T * MyDeque< T >::getElement(unsigned char * _pElement) const
 {
 	return reinterpret_cast<T*>(_pElement);
+}
+
+/**************************************************************************************************************/
+
+template<typename T>
+inline void MyDeque<T>::deleteElement(unsigned char * _pElement)
+{
+	if ( std::is_class<T>::value )
+		getElement(_pElement)->~T();
+}
+
+/**************************************************************************************************************/
+
+template<typename T>
+inline void MyDeque<T>::allocateDirectory()
+{
+	m_data = new unsigned char*[m_directorySize];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
