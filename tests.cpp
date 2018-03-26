@@ -429,6 +429,10 @@ DECLARE_OOP_TEST(iterator_correct_values)
 		assert(*it == test[i]);
 		++it;
 	}
+
+	auto a = test.cbegin();
+
+	std::cout << *a;
 }
 
 DECLARE_OOP_TEST(check_iterator)
