@@ -233,7 +233,6 @@ public:
 template<typename T>
 MyDeque< T >::MyDeque()
 {
-
 	resetIndexes();
 
 	m_data = new unsigned char*[m_directorySize];
@@ -242,7 +241,7 @@ MyDeque< T >::MyDeque()
 /**************************************************************************************************************/
 
 template<typename T>
-MyDeque< T >::MyDeque(int _elementsEmount, T _element = T{})
+MyDeque< T >::MyDeque(int _elementsEmount, T _element)
 	:MyDeque()
 {
 	for ( int i = 0; i < _elementsEmount; i++ )
@@ -252,7 +251,7 @@ MyDeque< T >::MyDeque(int _elementsEmount, T _element = T{})
 /**************************************************************************************************************/
 
 template< typename T >
-template< typename U >
+	template< typename U >
 MyDeque< T >::MyDeque(std::initializer_list< U > _list)
 	:MyDeque()
 {
@@ -288,9 +287,11 @@ MyDeque< T >::MyDeque(MyDeque< T > && _deque)
 	m_backAllocatedBlockIndex(_deque.m_backAllocatedBlockIndex),
 	m_frontAllocatedBlockIndex(_deque.m_frontAllocatedBlockIndex)
 {
-	// TODO: fix
+	m_data = _deque.m_data;
 
-	std::swap(m_data, _deque.m_data);
+	_deque.m_data = nullptr;
+
+	_deque.resetIndexes();
 }
 
 /**************************************************************************************************************/

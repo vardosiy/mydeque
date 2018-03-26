@@ -1,83 +1,129 @@
 #include "mydeque.hpp"
 #include "testlib.hpp"
-#include <deque>
 
 #include <vector>
 
 DECLARE_OOP_TEST(default_constructor)
 {
-	std::string a;
-	MyDeque<int> test;
-	assert(test.size() == 0);
-	assert(test.empty());
+	MyDeque<int> testInt;
+	assert(testInt.size() == 0);
+	assert(testInt.empty());
 
-	MyDeque<double> test2;
-	assert(test2.size() == 0);
-	assert(test2.empty());
 
-	MyDeque<float> test3;
-	assert(test3.size() == 0);
-	assert(test3.empty());
+	MyDeque<double> testDouble;
+	assert(testDouble.size() == 0);
+	assert(testDouble.empty());
 
-	MyDeque<std::string> test4;
-	assert(test3.size() == 0);
-	assert(test4.empty());
+
+	MyDeque<std::string> testString;
+	assert(testString.size() == 0);
+	assert(testString.empty());
+
+
+	MyDeque< std::vector<int> > testVector;
+	assert(testVector.size() == 0);
+	assert(testVector.empty());
 }
 
-DECLARE_OOP_TEST(constructor_with_number_of_elements_and_their_value)
+DECLARE_OOP_TEST(constructor_with_amount_of_elements_and_their_value)
 {
-	MyDeque<int> test1(10, 0);
-	assert(test1.size() == 10);
+	MyDeque<int> testInt(10, 0);
+	assert(testInt.size() == 10);
 	for ( int i = 0; i < 10; i++ )
-		assert(test1[i] == 0);
+		assert(testInt[i] == 0);
 
-	MyDeque<int> test2(20, 3);
-	assert(test2.size() == 20);
-	for ( int i = 0; i < 20; i++ )
-		assert(test2[i] == 3);
 
-	MyDeque<std::string> test3(20, "hello");
+	MyDeque<int> testInt2(20, 3);
+	assert(testInt2.size() == 20);
 	for ( int i = 0; i < 20; i++ )
-		assert(test3[i] == "hello");
+		assert(testInt2[i] == 3);
+
+
+	std::string exampleString = "hello";
+	MyDeque<std::string> testString(20, exampleString);
+	assert(testString.size() == 20);
+	for ( int i = 0; i < 20; i++ )
+		assert(testString[i] == exampleString);
+
+
+	std::vector<int> exampleVector{ 1,2,3 };
+	MyDeque< std::vector<int> > testVector(30, exampleVector);
+	assert(testVector.size() == 30);
+	for ( int i = 0; i < 20; i++ )
+		assert(testVector[i] == exampleVector);
 }
 
 DECLARE_OOP_TEST(initializer_list_constructor)
 {
-	MyDeque<int> test1({ 1,2,3,4,5,6,7,8,9,10 });
-	assert(test1.size() == 10);
+	MyDeque<int> testInt{ 1,2,3,4,5,6,7,8,9,10 };
+	assert(testInt.size() == 10);
 	for ( int i = 0; i < 10; i++ )
-		assert(test1[i] == i + 1);
+		assert(testInt[i] == i + 1);
 
-	MyDeque<std::string> test2({ "hello", "guys" });
-	assert(test2[0] == "hello");
-	assert(test2[1] == "guys");
+
+	MyDeque<std::string> testString{ "hello", "guys" };
+	assert(testString[0] == "hello");
+	assert(testString[1] == "guys");
+
+
+	std::vector<int> example1{ 1,2,3 };
+	std::vector<int> example2{ 4,5,6 };
+	MyDeque< std::vector<int> > testVector{ example1, example2 };
+	assert(testVector[0] == example1);
+	assert(testVector[1] == example2);
 }
 
 DECLARE_OOP_TEST(copy_constructor_with_same_type)
 {
-	MyDeque<int> test1({ 1,2,3,4,5,6,7,8,9,10 });
-	MyDeque<int> test2(test1);
-
+	MyDeque<int> testInt1({ 1,2,3,4,5,6,7,8,9,10 });
+	MyDeque<int> testInt2(testInt1);
+	assert(testInt1.size() == testInt2.size());
 	for ( int i = 0; i < 10; i++ )
-		assert(test2[i] == test1[i]);
-	assert(test1.size() == test2.size());
+		assert(testInt2[i] == testInt1[i]);
 
-	MyDeque<std::string> test3({ "hello", "guys" });
-	MyDeque<std::string> test4({ "new", "strings" });
-	test3 = test4;
-	assert(test3[0] == "new");
-	assert(test3[1] == "strings");
+
+	MyDeque<std::string> testString1{ "some", "string" };
+	MyDeque<std::string> testString2(testString1);
+	assert(testString2[0] == "some");
+	assert(testString2[1] == "string");
 }
 
 DECLARE_OOP_TEST(copy_constructor_with_different_type)
 {
-	MyDeque<double> test1({ 9.9, 8.8, 7.7, 6.6, 5.5, 4.4, 3.3, 2.2, 1.1 });
-	MyDeque<int> test2(test1);
+	MyDeque<double> testDouble({ 9.9, 8.8, 7.7, 6.6, 5.5, 4.4, 3.3, 2.2, 1.1 });
+	MyDeque<int> testInt(testDouble);
 
 	for ( int i = 0; i < 9; i++ )
-		assert(test2[i] == (int) (test1[i]));
+		assert(testInt[i] == (int) (testDouble[i]));
 
-	assert(test1.size() == test2.size());
+	assert(testDouble.size() == testInt.size());
+}
+
+DECLARE_OOP_TEST(move_constructor)
+{
+	{
+		int elements[] = { 1,2,3,4,5,6,7,8 };
+
+		MyDeque<int> test1;
+		for ( auto number : elements )
+			test1.push_back(number);
+
+		MyDeque<int> test2 = std::move(test1);
+
+		for ( int i{ 0 }; i < 8; i++ )
+			assert(test2[i] = elements[i]);
+	}
+	{
+		std::vector< std::vector<int> > forCheck{ {1,1,1,1}, {2,2,2,2,2}, {3,3,3,3,3} };
+		MyDeque< std::vector<int> > testVector1;
+		for ( auto & v : forCheck )
+			testVector1.push_back(v);
+
+		MyDeque< std::vector<int> > testVectors2 = std::move(testVector1);
+		for ( int i{ 0 }; i < 3; ++i )
+			assert(testVectors2[i] == forCheck[i]);
+	}
+	
 }
 
 DECLARE_OOP_TEST(compare_operators)
@@ -86,13 +132,15 @@ DECLARE_OOP_TEST(compare_operators)
 	MyDeque<int> test2({ 9,8,7,6,5,4,3,2,1 });
 	MyDeque<int> test3({ 1,2,3,4,5,6,7,8,9 });
 	MyDeque<int> test4({ 1,2,3,4,5,6,7,8,9,10 });
-	MyDeque<std::string> test5({ "hello", "guys" });
-	MyDeque<std::string> test6({ "new", "strings" });
 
 	assert(!(test1 == test2));
 	assert(test1 != test2);
 	assert(test1 == test3);
 	assert(test1 != test4);
+
+
+	MyDeque<std::string> test5({ "some", "strings" });
+	MyDeque<std::string> test6({ "new", "strings" });
 	assert(!(test5 == test6));
 	assert(test5 != test6);
 }
