@@ -9,7 +9,43 @@
 #include <cassert>
 #include <iostream>
 #include <cstddef>
+#include <iostream>
 #include <iterator>
+
+//template< typename U >
+//struct test
+//{
+//	typedef char yes;
+//	typedef int no;
+//
+//	template<
+//		class Some,
+//		typename Some::iterator(Some::*)(),
+//		typename Some::iterator(Some::*)()>
+//		struct checker {};
+//
+//	template< class Some>
+//	static yes check(checker<Some, &Some::begin, &Some::end>*);
+//
+//	template< class Some>
+//	static no check(...);
+//
+//public:
+//	enum { value = sizeof(check< U >(0)) == sizeof(yes) };
+//};
+
+//template< bool condition, typename if_yes, typename if_no >
+//struct MyEnable_if
+//{
+//	typedef if_no type;
+//};
+//
+//template< true, typename if_yes, typename if_no >
+//struct MyEnable_if
+//{
+//	typedef if_yes type;
+//};
+
 
 /************************************************************************************/
 
@@ -154,6 +190,8 @@ public:
 
 		Iterator(Deque & _deque, unsigned int _currentPositon);
 
+		Iterator(const Iterator & _it);
+
 		size_t getCurrentPosition() const;
 
 		/*----------------------------------------------------------------------------------*/
@@ -206,6 +244,7 @@ public:
 
 		const T & operator *() const;
 
+		template< typename = std::enable_if< !(std::is_const< Deque >::value) >::type >
 		T & operator *();
 	};
 
@@ -215,18 +254,18 @@ public:
 
 	using iterator = Iterator< MyDeque< T > >;
 
-	void erase(iterator _it); //TODO fix;
+	void erase(const iterator & _it);
 
-	void erase(iterator _itBegin, iterator _itEnd);
+	void erase(const iterator & _itBegin, const iterator & _itEnd); // choose side
 
-	void insert(iterator _it, const T & _element);
+	void insert(const iterator & _it, const T & _element); // choose side
 
 	template< typename InputIt >
 	void insert(InputIt _itBegin, InputIt _itEnd);
 
-	Iterator< MyDeque<T> > begin();
+	iterator begin();
 
-	Iterator< MyDeque<T> > end();
+	iterator end();
 
 	const_iterator cbegin() const;
 
@@ -287,12 +326,16 @@ MyDeque< T >::MyDeque(const MyDeque< T > & _deque)
 
 template< typename T >
 MyDeque< T >::MyDeque(MyDeque< T > && _deque)
-	:m_directorySize(_deque.m_directorySize), m_frontIndex(_deque.m_frontIndex), m_backIndex(_deque.m_backIndex),
-	m_frontBlockIndex(_deque.m_frontBlockIndex), m_backBlockIndex(_deque.m_backBlockIndex),
+	:m_directorySize(_deque.m_directorySize),
+	m_backIndex(_deque.m_backIndex),
+	m_frontIndex(_deque.m_frontIndex),
+	m_backBlockIndex(_deque.m_backBlockIndex),
+	m_frontBlockIndex(_deque.m_frontBlockIndex),
 	m_backAllocatedBlockIndex(_deque.m_backAllocatedBlockIndex),
 	m_frontAllocatedBlockIndex(_deque.m_frontAllocatedBlockIndex)
 {
 	m_data = _deque.m_data;
+
 	_deque.m_data = nullptr;
 
 	_deque.resetIndexes();
@@ -431,7 +474,7 @@ void MyDeque< T >::pop_front()
 
 	deleteElement(m_data[m_frontBlockIndex] + m_frontIndex * sizeof(T));
 
-	nextIndex(m_frontIndex, m_backBlockIndex, actions::REDUCE);
+	nextIndex(m_frontIndex, m_frontBlockIndex, actions::INCREASE);
 }
 
 /**************************************************************************************************************/
@@ -445,6 +488,8 @@ void MyDeque< T >::clear()
 	resetData();
 
 	resetIndexes();
+
+	allocateDirectory();
 }
 
 /**************************************************************************************************************/
@@ -726,8 +771,6 @@ void MyDeque< T >::freeMemoryBlocks()
 		delete[] m_data[i];
 
 	delete[] m_data;
-
-	m_data = nullptr; // for cases, when client does nothing after calling clear() func, for correct deleting
 }
 
 /**************************************************************************************************************/
@@ -744,18 +787,18 @@ void MyDeque< T >::copyElements(const MyDeque< U > & _deque)
 /**************************************************************************************************************/
 
 template< typename T >
-MyDeque< T >::Iterator< MyDeque< T > > MyDeque< T >::begin()
+typename MyDeque< T >::iterator MyDeque< T >::begin()
 {
-	Iterator< MyDeque< T > > it(*this, 0);
+	iterator it(*this, 0);
 	return it;
 }
 
 /**************************************************************************************************************/
 
 template< typename T >
-MyDeque< T >::Iterator< MyDeque< T > > MyDeque< T >::end()
+typename MyDeque< T >::iterator MyDeque< T >::end()
 {
-	Iterator< MyDeque< T > > it(*this, size() - 1);
+	iterator it(*this, size());
 	return it;
 }
 
@@ -773,39 +816,52 @@ typename MyDeque< T >::const_iterator MyDeque< T >::cbegin() const
 template< typename T >
 typename MyDeque< T >::const_iterator MyDeque< T >::cend() const
 {
-	const_iterator it(*this, size() - 1);
+	const_iterator it(*this, size());
 	return it;
 }
 
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::erase(typename MyDeque< T >::iterator _it)
+void MyDeque< T >::erase(typename const MyDeque< T >::iterator & _it)
 {
 	if ( !isValid(_it.getCurrentPosition()) )
 		throw std::logic_error(Messages::InvalidIterator);
 
-	// TODO: choose the right side
+	int size = this->size();
 
-	int size = this->size() - 2;
-	for ( int i = _it.getCurrentPosition(); i < size; i++ )
-		(*this)[i] = (*this)[i + 1];
+	if ( _it.getCurrentPosition() > size / 2 )
+	{
+		int newLastIndex = size - 2;
 
-	previousIndex(m_backIndex, m_backBlockIndex, REDUCE);
+		for ( int i{ it.getCurrentPosition() }; i < newLastIndex; i++ )
+			(*this)[i] = (*this)[i + 1];
+
+		pop_back();
+	}
+	else
+	{
+		int i = _it.getCurrentPosition();
+		for ( ; i > 0; i-- )
+			(*this)[i] = (*this)[i - 1];
+
+		pop_front();
+	}
+
 }
 
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::erase(typename MyDeque< T >::iterator _itBegin, typename MyDeque< T >::iterator _itEnd)
+void MyDeque< T >::erase(typename const MyDeque< T >::iterator & _itBegin, typename const MyDeque< T >::iterator & _itEnd)
 {
 	if ( _itEnd.getCurrentPosition() < _itBegin.getCurrentPosition() ||
 		!isValid(_itBegin.getCurrentPosition()) ||
 		!isValid(_itEnd.getCurrentPosition()) )
 		throw std::logic_error(Messages::InvalidIterator);
 
-	int lastIndex = this->size() - 1; // -1 becouse it is index
-	int difference = _itEnd.getCurrentPosition() - _itBegin.getCurrentPosition() + 1;
+	int lastIndex = this->size() - 1; // -1 because it is index
+	int difference = _itEnd.getCurrentPosition() - _itBegin.getCurrentPosition() + 1; // +1 because it is [Begin; End]
 
 	for ( int i = _itBegin.getCurrentPosition(); i < _itBegin.getCurrentPosition() + difference; i++ )
 	{
@@ -822,7 +878,7 @@ void MyDeque< T >::erase(typename MyDeque< T >::iterator _itBegin, typename MyDe
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::insert(typename MyDeque< T >::iterator _it, const T & _element)
+void MyDeque< T >::insert(typename const MyDeque< T >::iterator & _it, const T & _element)
 {
 	if ( !isValid(_it.getCurrentPosition()) )
 		throw std::logic_error(Messages::InvalidIterator);
@@ -841,15 +897,20 @@ void MyDeque< T >::insert(typename MyDeque< T >::iterator _it, const T & _elemen
 /**************************************************************************************************************/
 
 template< typename T >
-template< class InputIt >
+	template< class InputIt >
 void MyDeque< T >::insert(InputIt _itBegin, InputIt _itEnd)
 {
-	// TODO: push only one element if equal
-
-	do {
+	if ( _itBegin == _itEnd )
+	{
 		push_back(*_itBegin);
-		++_itBegin;
-	} while ( _itBegin != _itEnd );
+	}
+	else
+	{
+		do {
+			push_back(*_itBegin);
+			++_itBegin;
+		} while ( _itBegin != _itEnd );
+	}
 }
 
 /**************************************************************************************************************/
@@ -929,6 +990,14 @@ template< typename T >
 	template < class Deque >
 MyDeque< T >::Iterator< Deque >::Iterator(Deque & _deque, unsigned int _currentPositon)
 	:m_deque(_deque), m_currentPosition(_currentPositon)
+{}
+
+/**************************************************************************************************************/
+
+template<typename T>
+	template<class Deque>
+ MyDeque<T>::Iterator<Deque>::Iterator(const MyDeque<T>::Iterator<Deque> & _it)
+	 :m_deque(_it.m_deque), m_currentPosition(_it.m_currentPosition)
 {}
 
 /**************************************************************************************************************/
@@ -1020,7 +1089,7 @@ template< typename T >
 	template < class Deque >
 MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + (const MyDeque< T >::Iterator< Deque > & _it) const
 {
-	assert(m_currentPosition + _it.currentPosition < m_deque.size());
+	assert( (m_currentPosition + _it.m_currentPosition) < m_deque.size());
 
 	MyDeque< T >::Iterator< Deque > result(m_deque, m_currentPosition + _it.m_currentPosition);
 
@@ -1091,6 +1160,7 @@ template< typename T >
 MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += (int _step)
 {
 	m_currentPosition += _step;
+
 	return *this;
 }
 
@@ -1150,6 +1220,8 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator -- (in
 
 /**************************************************************************************************************/
 
+/*const T & MyDeque< T >::Iterator< Deque >::operator *() const*/
+
 template< typename T >
 	template < class Deque >
 const T & MyDeque< T >::Iterator< Deque >::operator *() const
@@ -1159,8 +1231,11 @@ const T & MyDeque< T >::Iterator< Deque >::operator *() const
 
 /**************************************************************************************************************/
 
+/*MyEnable_if<std::is_const< Deque >::value, const T &, T& >::type*/
+
 template< typename T >
 	template < class Deque >
+		template< typename = std::enable_if< !(std::is_const< Deque >::value) >::type >
 T & MyDeque< T >::Iterator< Deque >::operator *()
 {
 	return m_deque[m_currentPosition];

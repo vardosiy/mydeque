@@ -1,6 +1,6 @@
 #include "mydeque.hpp"
 #include "testlib.hpp"
-
+#include <deque>
 #include <vector>
 
 DECLARE_OOP_TEST(default_constructor)
@@ -241,6 +241,15 @@ DECLARE_OOP_TEST(const_at)
 	}
 }
 
+DECLARE_OOP_TEST(test)
+{
+	MyDeque<int> test(10, 0);
+
+	test.clear();
+
+	test.push_back(10);
+}
+
 DECLARE_OOP_TEST(at_for_writing)
 {
 	MyDeque<int> test({ 0,1,2,3,4,5 });
@@ -430,9 +439,29 @@ DECLARE_OOP_TEST(iterator_correct_values)
 		++it;
 	}
 
+	/*auto a = test.begin();
+
+	auto b = test.begin();
+
+	auto fc = a + 3;*/
+
 	auto a = test.cbegin();
 
 	std::cout << *a;
+
+	a++;
+	a--;
+	a + a;
+	a - a;
+
+	++a;
+	--a;
+
+	a = a;
+
+	*a;
+
+	//*a = 5;
 }
 
 DECLARE_OOP_TEST(check_iterator)
@@ -506,7 +535,8 @@ DECLARE_OOP_TEST(erase_sequence)
 	assert(test.size() == 9);
 	auto it1 = test.end();
 	auto it2 = test.end();
-	it1 = it1 - 2;
+	it1 -= 3;
+	it2 -= 1;
 	test.erase(it1, it2);
 	for ( int i = 0; i < 6; i++ )
 		assert(test[i] == i + 1);
