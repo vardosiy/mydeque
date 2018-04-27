@@ -43,7 +43,7 @@ DECLARE_OOP_TEST( constructor_with_amount_of_elements_and_their_value )
 		assert( testString[i] == exampleString );
 
 
-	std::vector<int> exampleVector{ 1,2,3 };
+	std::vector<int> exampleVector{ 1, 2, 3 };
 	MyDeque< std::vector<int> > testVector( 30, exampleVector );
 	assert( testVector.size() == 30 );
 	for ( int i = 0; i < 20; i++ )
@@ -52,7 +52,7 @@ DECLARE_OOP_TEST( constructor_with_amount_of_elements_and_their_value )
 
 DECLARE_OOP_TEST( initializer_list_constructor )
 {
-	MyDeque<int> testInt{ 1,2,3,4,5,6,7,8,9,10 };
+	MyDeque<int> testInt{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	assert( testInt.size() == 10 );
 	for ( int i = 0; i < 10; i++ )
 		assert( testInt[i] == i + 1 );
@@ -63,8 +63,8 @@ DECLARE_OOP_TEST( initializer_list_constructor )
 	assert( testString[1] == "guys" );
 
 
-	std::vector<int> example1{ 1,2,3 };
-	std::vector<int> example2{ 4,5,6 };
+	std::vector<int> example1{ 1, 2, 3 };
+	std::vector<int> example2{ 4, 5, 6 };
 	MyDeque< std::vector<int> > testVector{ example1, example2 };
 	assert( testVector[0] == example1 );
 	assert( testVector[1] == example2 );
@@ -72,7 +72,7 @@ DECLARE_OOP_TEST( initializer_list_constructor )
 
 DECLARE_OOP_TEST( copy_constructor_with_same_type )
 {
-	MyDeque<int> testInt1{ 1,2,3,4,5,6,7,8,9,10 };
+	MyDeque<int> testInt1{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	MyDeque<int> testInt2( testInt1 );
 	assert( testInt1.size() == testInt2.size() );
 	for ( int i = 0; i < 10; i++ )
@@ -91,7 +91,7 @@ DECLARE_OOP_TEST( copy_constructor_with_different_type )
 	MyDeque<int> testInt( testDouble );
 
 	for ( int i = 0; i < 9; i++ )
-		assert( testInt[i] == ( int )( testDouble[i] ) );
+		assert( testInt[i] == ( int ) ( testDouble[i] ) );
 
 	assert( testDouble.size() == testInt.size() );
 }
@@ -99,7 +99,7 @@ DECLARE_OOP_TEST( copy_constructor_with_different_type )
 DECLARE_OOP_TEST( move_constructor )
 {
 	{
-		int elements[] = { 1,2,3,4,5,6,7,8 };
+		int elements[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
 		MyDeque<int> test1;
 		for ( auto number : elements )
@@ -111,7 +111,7 @@ DECLARE_OOP_TEST( move_constructor )
 			assert( test2[i] = elements[i] );
 	}
 	{
-		std::vector< std::vector<int> > forCheck{ { 1,1,1,1 },{ 2,2,2,2,2 },{ 3,3,3,3,3 } };
+		std::vector< std::vector<int> > forCheck{ { 1, 1, 1, 1 }, { 2, 2, 2, 2, 2 }, { 3, 3, 3, 3, 3 } };
 		MyDeque< std::vector<int> > testVector1;
 		for ( auto & v : forCheck )
 			testVector1.push_back( v );
@@ -125,10 +125,10 @@ DECLARE_OOP_TEST( move_constructor )
 
 DECLARE_OOP_TEST( compare_operators )
 {
-	MyDeque<int> test1{ 1,2,3,4,5,6,7,8,9 };
-	MyDeque<int> test2{ 9,8,7,6,5,4,3,2,1 };
-	MyDeque<int> test3{ 1,2,3,4,5,6,7,8,9 };
-	MyDeque<int> test4{ 1,2,3,4,5,6,7,8,9,10 };
+	MyDeque<int> test1{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	MyDeque<int> test2{ 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+	MyDeque<int> test3{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	MyDeque<int> test4{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 	assert( !( test1 == test2 ) );
 	assert( test1 != test2 );
@@ -144,18 +144,18 @@ DECLARE_OOP_TEST( compare_operators )
 
 DECLARE_OOP_TEST( appropriation_operator_with_different_types )
 {
-	MyDeque<int> test1{ 1,2,3,4,5,6,7,8,9 };
+	MyDeque<int> test1{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	MyDeque<double> test2{ 9.9, 8.8, 7.7, 6.6, 5.5, 4.4, 3.3, 2.2, 1.1 };
 	test1 = test2;
 	for ( int i = 0; i < 9; i++ )
-		assert( test1[i] == ( int )test2[i] );
+		assert( test1[i] == ( int ) test2[i] );
 }
 
 DECLARE_OOP_TEST( appropriation_operator_with_same_types_and_check_for_creating_correct_copy )
 {
-	MyDeque<int> test1{ 9,8,7,6,5,4,3,2,1 };
+	MyDeque<int> test1{ 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 	{
-		MyDeque<int> test2{ 1,2,3,4,5,6,7,8,9 };
+		MyDeque<int> test2{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		test1 = test2;
 	}
 	for ( int i = 0; i < 9; i++ )
@@ -208,7 +208,7 @@ DECLARE_OOP_TEST( size )
 
 DECLARE_OOP_TEST( const_at )
 {
-	MyDeque<int> test{ 0,1,2,3,4,5 };
+	MyDeque<int> test{ 0, 1, 2, 3, 4, 5 };
 
 	for ( int i = 0; i <= 5; i++ )
 		assert( test.at( i ) == i );
@@ -249,7 +249,7 @@ DECLARE_OOP_TEST( test )
 
 DECLARE_OOP_TEST( at_for_writing )
 {
-	MyDeque<int> test{ 0,1,2,3,4,5 };
+	MyDeque<int> test{ 0, 1, 2, 3, 4, 5 };
 
 	for ( int i = 0; i <= 5; i++ )
 		test.at( i ) = i + 10;
@@ -285,7 +285,7 @@ DECLARE_OOP_TEST( at_for_writing )
 
 DECLARE_OOP_TEST( index_operator )
 {
-	MyDeque<int> test{ 0,1,2,3,4,5 };
+	MyDeque<int> test{ 0, 1, 2, 3, 4, 5 };
 	for ( int i = 0; i < 6; i++ )
 		assert( test[i] == i );
 	test.push_front( 1 );
@@ -428,7 +428,7 @@ DECLARE_OOP_TEST( pushFront_and_popBack )
 
 DECLARE_OOP_TEST( iterator_correct_values )
 {
-	MyDeque<int> test{ 9,8,7,6,5,4,3,2,1 };
+	MyDeque<int> test{ 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 	auto it = test.begin();
 	for ( int i = 0; i < 9; i++ )
 	{
@@ -463,7 +463,7 @@ DECLARE_OOP_TEST( iterator_correct_values )
 
 DECLARE_OOP_TEST( check_iterator )
 {
-	MyDeque<int> test{ 9,8,7,6,5,4,3,2,1 };
+	MyDeque<int> test{ 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 	auto it1 = test.begin();
 	auto it2 = test.begin();
 	assert( it1 == it2 );
@@ -478,7 +478,7 @@ DECLARE_OOP_TEST( check_iterator )
 
 DECLARE_OOP_TEST( writing_with_iterator )
 {
-	MyDeque<int> test{ 9,8,7,6,5,4,3,2,1 };
+	MyDeque<int> test{ 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 	auto it = test.begin();
 	for ( int i = 0; i < 9; i++ )
 	{
@@ -495,23 +495,31 @@ DECLARE_OOP_TEST( writing_with_iterator )
 
 DECLARE_OOP_TEST( insert_one_element )
 {
-	MyDeque<int> test{ 1,2,4,5,6,7,8,9 };
+	MyDeque<int> test{ 1, 2, 4, 5, 6, 7, 8, 9 };
 	auto it = test.begin();
-	it++;
+	it += 2;
 	test.insert( it, 3 );
 	int size = test.size();
 	for ( int i = 0; i < size; i++ )
-		std::cout << test[i] << std::endl;
-	//assert(test[i] == i + 1);
+		assert( test[i] == i + 1 );
+
+
+	MyDeque<int> test2{ 1, 2, 3, 4, 5, 6, 7, 9 };
+	auto it2 = test2.end();
+	--it2;
+	test2.insert( it2, 8 );
+	int size2 = test2.size();
+	for ( int i = 0; i < size; i++ )
+		assert( test2[i] == i + 1 );
 }
 
 DECLARE_OOP_TEST( insert_sequence )
 {
-	MyDeque<int> test{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 };
+	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 22 };
 	auto itDeque = test.end();
 	--itDeque;
 
-	std::vector<int> v( { 20,21,22 } );
+	std::vector<int> v( { 19, 20, 21 } );
 	auto itVecBegin = v.begin();
 	auto itVecEnd = v.end();
 	test.insert( itVecBegin, itVecEnd, itDeque );
@@ -523,7 +531,7 @@ DECLARE_OOP_TEST( insert_sequence )
 
 DECLARE_OOP_TEST( erase_one_element )
 {
-	MyDeque<int> test{ 1,2,3,4,5,6,7,8,9 };
+	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	assert( test.size() == 9 );
 	test.erase( test.begin() );
 	assert( test[0] == 2 );
@@ -533,7 +541,7 @@ DECLARE_OOP_TEST( erase_one_element )
 
 DECLARE_OOP_TEST( erase_sequence )
 {
-	MyDeque<int> test{ 1,2,3,4,5,6,7,8,9 };
+	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	assert( test.size() == 9 );
 	auto it1 = test.end();
 	auto it2 = test.end();
@@ -547,7 +555,7 @@ DECLARE_OOP_TEST( erase_sequence )
 
 DECLARE_OOP_TEST( full_iteration )
 {
-	MyDeque<int> test{ 1,2,3,4,5,6,7,8,9 };
+	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	int counter = 0;
 	for ( auto & x : test )
 	{
@@ -558,7 +566,7 @@ DECLARE_OOP_TEST( full_iteration )
 
 DECLARE_OOP_TEST( incrementation_iteration )
 {
-	MyDeque<int> test( { 1,2,3,4,5,6,7,8,9 } );
+	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	auto it1 = test.begin();
 	auto it2 = ++it1;
 	assert( it2 == it1 );

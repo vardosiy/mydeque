@@ -788,7 +788,7 @@ typename MyDeque< T >::const_iterator MyDeque< T >::cend() const
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::erase( typename MyDeque< T >::iterator _it )
+void MyDeque< T >::erase( iterator _it )
 {
 	if ( !isValid( _it.getCurrentPosition() ) )
 		throw std::logic_error( Messages::InvalidIterator );
@@ -821,7 +821,7 @@ void MyDeque< T >::erase( typename MyDeque< T >::iterator _it )
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::erase( typename MyDeque< T >::iterator _itBegin, typename MyDeque< T >::iterator _itEnd )
+void MyDeque< T >::erase( iterator _itBegin, iterator _itEnd )
 {
 	if ( _itEnd.getCurrentPosition() < _itBegin.getCurrentPosition() ||
 		!isValid( _itBegin.getCurrentPosition() ) ||
@@ -860,37 +860,34 @@ void MyDeque< T >::erase( typename MyDeque< T >::iterator _itBegin, typename MyD
 /**************************************************************************************************************/
 
 template< typename T >
-void MyDeque< T >::insert( typename MyDeque< T >::iterator _it, const T & _element ) // fix this func
+void MyDeque< T >::insert( iterator _it, const T & _element ) // fix this func
 {
 	if ( !isValid( _it.getCurrentPosition() ) )
 		throw std::logic_error( Messages::InvalidIterator );
 
 	int size = this->size();
 
-	MyDeque< T >::iterator itNext = _it;
-	MyDeque< T >::iterator itCurrent = _it;
-
 	if ( _it.getCurrentPosition() > size / 2 )
 	{
 		nextIndex( m_backIndex, m_backBlockIndex, actions::INCREASE );
-
 		allocateMemory();
 
-		++itNext;
+		iterator itCurrent = end() - 1;
+		iterator itNext = itCurrent - 1;
 
-		for ( ; itNext.getCurrentPosition() < size; ++itNext, ++itCurrent )
+		for ( ; itCurrent != _it; --itNext, --itCurrent )
 			*itCurrent = std::move( *itNext );
 	}
 	else
 	{
 		previousIndex( m_frontIndex, m_frontBlockIndex, actions::REDUCE );
-
 		allocateMemory();
 
-		++itCurrent;
+		iterator itCurrent = begin();
+		iterator itNext = itCurrent + 1;
 
-		for ( ; itNext.getCurrentPosition() > 0; --itNext, --itCurrent )
-			*itNext = std::move( *itCurrent );
+		for ( ; itCurrent != _it;  ++itNext, ++itCurrent )
+			*itCurrent = std::move( *itNext );
 	}
 
 	*_it = _element;
@@ -980,7 +977,7 @@ inline void MyDeque<T>::allocateDirectory()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque >::Iterator( Deque & _deque, unsigned int _currentPositon )
 	:m_deque( _deque ), m_currentPosition( _currentPositon )
 {
@@ -988,9 +985,9 @@ MyDeque< T >::Iterator< Deque >::Iterator( Deque & _deque, unsigned int _current
 
 /**************************************************************************************************************/
 
-template<typename T>
-template<class Deque>
-MyDeque<T>::Iterator<Deque>::Iterator( const MyDeque<T>::Iterator<Deque> & _it )
+template< typename T >
+template< class Deque >
+MyDeque< T >::Iterator< Deque >::Iterator( const Iterator<Deque> & _it )
 	:m_deque( _it.m_deque ), m_currentPosition( _it.m_currentPosition )
 {
 }
@@ -998,8 +995,8 @@ MyDeque<T>::Iterator<Deque>::Iterator( const MyDeque<T>::Iterator<Deque> & _it )
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator == ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+bool MyDeque< T >::Iterator< Deque >::operator == ( const Iterator< Deque > & _it ) const
 {
 	bool result = ( m_currentPosition == _it.m_currentPosition ) &&
 		( ( const void * )&m_deque == ( const void * )&_it.m_deque );
@@ -1010,8 +1007,8 @@ bool MyDeque< T >::Iterator< Deque >::operator == ( const MyDeque< T >::Iterator
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator != ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+bool MyDeque< T >::Iterator< Deque >::operator != ( const Iterator< Deque > & _it ) const
 {
 	return !( *this == _it );
 }
@@ -1019,8 +1016,8 @@ bool MyDeque< T >::Iterator< Deque >::operator != ( const MyDeque< T >::Iterator
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator >= ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+bool MyDeque< T >::Iterator< Deque >::operator >= ( const Iterator< Deque > & _it ) const
 {
 	return m_currentPosition >= _it.m_currentPosition;
 }
@@ -1028,8 +1025,8 @@ bool MyDeque< T >::Iterator< Deque >::operator >= ( const MyDeque< T >::Iterator
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator <= ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+bool MyDeque< T >::Iterator< Deque >::operator <= ( const Iterator< Deque > & _it ) const
 {
 	return m_currentPosition <= _it.m_currentPosition;
 }
@@ -1037,8 +1034,8 @@ bool MyDeque< T >::Iterator< Deque >::operator <= ( const MyDeque< T >::Iterator
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator > ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+bool MyDeque< T >::Iterator< Deque >::operator > ( const Iterator< Deque > & _it ) const
 {
 	return m_currentPosition > _it.m_currentPosition;
 }
@@ -1046,8 +1043,8 @@ bool MyDeque< T >::Iterator< Deque >::operator > ( const MyDeque< T >::Iterator<
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator < ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+bool MyDeque< T >::Iterator< Deque >::operator < ( constIterator< Deque > & _it ) const
 {
 	return m_currentPosition < _it.m_currentPosition;
 }
@@ -1068,7 +1065,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( in
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( int _step ) const
 {
 	//assert(m_currentPosition - _step >= 0);
@@ -1081,8 +1078,8 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( in
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( const Iterator< Deque > & _it ) const
 {
 	//assert( (m_currentPosition + _it.m_currentPosition) < m_deque.size());
 
@@ -1094,8 +1091,8 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( co
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( const MyDeque< T >::Iterator< Deque > & _it ) const
+template< class Deque >
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( const Iterator< Deque > & _it ) const
 {
 	//assert(m_currentPosition - _it.m_currentPosition >= 0);
 
@@ -1107,8 +1104,8 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( co
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator = ( const MyDeque< T >::Iterator< Deque > & _it )
+template< class Deque >
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator = ( const Iterator< Deque > & _it )
 {
 	m_currentPosition = _it.m_currentPosition;
 
@@ -1118,8 +1115,8 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator = ( 
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= ( const MyDeque< T >::Iterator< Deque > & _it )
+template< class Deque >
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= ( const Iterator< Deque > & _it )
 {
 	//assert(m_currentPosition - _it.m_currentPosition() >= 0);
 
@@ -1131,8 +1128,8 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= (
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += ( const MyDeque< T >::Iterator< Deque > & _it )
+template< class Deque >
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += ( const Iterator< Deque > & _it )
 {
 	m_currentPosition += _it.m_currentPosition;
 	return *this;
@@ -1141,7 +1138,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += (
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= ( int _step )
 {
 	m_currentPosition -= _step;
@@ -1151,7 +1148,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= (
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += ( int _step )
 {
 	m_currentPosition += _step;
@@ -1162,7 +1159,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += (
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator ++ ()
 {
 	//assert(m_currentPosition < m_deque.size());
@@ -1175,7 +1172,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator ++ (
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator ++ ( int )
 {
 	//assert(m_currentPosition < m_deque.size());
@@ -1189,7 +1186,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator ++ ( i
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -- ()
 {
 	//assert(m_currentPosition > 0);
@@ -1202,7 +1199,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -- (
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator -- ( int )
 {
 	//assert(m_currentPosition > 0);
@@ -1216,7 +1213,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator -- ( i
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 const T & MyDeque< T >::Iterator< Deque >::operator *() const
 {
 	return m_deque[m_currentPosition];
@@ -1225,7 +1222,7 @@ const T & MyDeque< T >::Iterator< Deque >::operator *() const
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 template< typename = std::enable_if< !( std::is_const< Deque >::value ) >::type >
 T & MyDeque< T >::Iterator< Deque >::operator *()
 {
@@ -1235,7 +1232,7 @@ T & MyDeque< T >::Iterator< Deque >::operator *()
 /**************************************************************************************************************/
 
 template< typename T >
-template < class Deque >
+template< class Deque >
 int MyDeque< T >::Iterator< Deque >::getCurrentPosition() const
 {
 	return m_currentPosition;
