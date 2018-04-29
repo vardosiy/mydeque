@@ -132,6 +132,8 @@ public:
 
 	void shrink_to_fit();
 
+	int capacity() const;
+
 	std::size_t size() const;
 
 	bool empty() const;
@@ -637,6 +639,12 @@ void MyDeque< T >::shrink_to_fit()
 	m_data = shrinked_data;
 }
 
+template<typename T>
+int MyDeque<T>::capacity() const
+{
+	return m_directorySize * m_blockSize;
+}
+
 /**************************************************************************************************************/
 
 template< typename T >
@@ -880,10 +888,13 @@ void MyDeque< T >::insert( iterator _it, const T & _element ) // fix this func
 	}
 	else
 	{
+		//push_front( T{} );
 		previousIndex( m_frontIndex, m_frontBlockIndex, actions::REDUCE );
 		allocateMemory();
 
-		iterator itCurrent = begin();
+		iterator itCurrent = begin() + 1;
+		new( m_data[m_frontBlockIndex] + m_frontIndex * sizeof( T ) ) T( std::move( *itCurrent ) );
+
 		iterator itNext = itCurrent + 1;
 
 		for ( ; itCurrent != _it;  ++itNext, ++itCurrent )
@@ -1044,7 +1055,7 @@ bool MyDeque< T >::Iterator< Deque >::operator > ( const Iterator< Deque > & _it
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator < ( constIterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator < ( const Iterator< Deque > & _it ) const
 {
 	return m_currentPosition < _it.m_currentPosition;
 }
