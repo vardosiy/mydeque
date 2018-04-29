@@ -642,7 +642,7 @@ void MyDeque< T >::shrink_to_fit()
 template<typename T>
 int MyDeque<T>::capacity() const
 {
-	return m_directorySize * m_blockSize;
+	return ( m_backAllocatedBlockIndex - m_frontAllocatedBlockIndex + 1 ) * m_blockSize;
 }
 
 /**************************************************************************************************************/
