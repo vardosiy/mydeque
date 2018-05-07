@@ -36,6 +36,7 @@
 *.jpg
 
 # VS files
+*.user
 *.aps
 Debug/
 Release/

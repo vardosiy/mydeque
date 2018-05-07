@@ -590,22 +590,30 @@ DECLARE_OOP_TEST( writing_with_iterator )
 DECLARE_OOP_TEST( insert_one_element_first_half )
 {
 	MyDeque<int> test{ 1, 2, 4, 5, 6, 7, 8, 9 };
+	int sizeBefore = test.size();
+
 	auto it = test.begin();
 	it += 2;
 	test.insert( it, 3 );
-	int size = test.size();
-	for ( int i = 0; i < size; i++ )
+
+	int sizeAfter = test.size();
+	assert( sizeAfter - 1 == sizeBefore );
+	for( int i = 0; i < sizeAfter; i++ )
 		assert( test[i] == i + 1 );
 }
 
 DECLARE_OOP_TEST( insert_one_element_second_half )
 {
 	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 9 };
+	int sizeBefore = test.size();
+
 	auto it = test.end();
 	--it;
 	test.insert( it, 8 );
-	int size = test.size();
-	for ( int i = 0; i < size; i++ )
+
+	int sizeAfter = test.size();
+	assert( sizeAfter - 1 == sizeBefore );
+	for( int i = 0; i < sizeAfter; i++ )
 		assert( test[i] == i + 1 );
 }
 
@@ -683,6 +691,28 @@ DECLARE_OOP_TEST( erase_sequence_first_half )
 		assert( test[i] == i + 4 );
 }
 
+DECLARE_OOP_TEST( tests )
+{
+	std::vector< std::vector<int> > data{ { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 }, { 75, 22 }, { 11, 22 }, { 121, 211 } };
+
+	MyDeque< std::vector<int> > test;
+	for ( auto & it : data )
+		test.push_back( it );
+
+	assert( data.size() == test.size() );
+
+	auto it1 = test.begin();
+	auto it2 = test.begin();
+	it2 += 2;
+	test.erase( it1, it2 );
+
+	int size = test.size();
+	assert( size == data.size() - 3 );
+
+	for ( int i{ 0 }; i < size; i++ )
+		assert( test[i] == data[i + 3] );
+}
+
 DECLARE_OOP_TEST( erase_sequence_second_half )
 {
 	MyDeque<int> test{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -718,11 +748,11 @@ DECLARE_OOP_TEST( shrink_to_fit )
 	MyDeque<int> test( 10 );
 	assert( test.size() == 10 );
 
-	for ( int i = 0; i < 90; i++ )
+	for ( int i = 0; i < 88; i++ )
 		test.push_back( 1 );
-	assert( test.size() == 100 );
+	assert( test.size() == 98 );
 
 	test.shrink_to_fit();
-	assert( test.size() == 100 );
-	assert( test.capacity() == 100 );
+	assert( test.size() == 98 );
+	assert( test.capacity() == 100 ); // capacity == size - 2 because of those 2 indexes, which are set for writing
 }
