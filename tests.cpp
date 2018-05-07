@@ -745,7 +745,7 @@ DECLARE_OOP_TEST( full_iteration )
 
 DECLARE_OOP_TEST( shrink_to_fit )
 {
-	MyDeque<int> test( 10 );
+	MyDeque<int> test( 10, 1 );
 	assert( test.size() == 10 );
 
 	for ( int i = 0; i < 88; i++ )
@@ -755,4 +755,10 @@ DECLARE_OOP_TEST( shrink_to_fit )
 	test.shrink_to_fit();
 	assert( test.size() == 98 );
 	assert( test.capacity() == 100 ); // capacity == size - 2 because of those 2 indexes, which are set for writing
+
+	for( int i = 0; i < 102; i++ )
+		test.push_back( 1 );
+
+	for( int i{ 0 }; i < 200; ++i )
+		assert( test[i] == 1 ); // check for correct work after shrinking
 }
