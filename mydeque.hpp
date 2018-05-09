@@ -56,25 +56,25 @@ class MyDeque
 
 	void resetData();
 
-	void resetIndexes();
+	void resetIndexes() noexcept;
 
 	void deleteAllElements();
 
 	void freeMemoryBlocks();
 
-	bool isValidIndex( int _index ) const;
+	bool isValidIndex( int _index ) const noexcept;
 
-	Cell nextIndex( Cell _indexes, int _action ) const;
+	Cell nextIndex( Cell _indexes, int _action ) const noexcept;
 
-	Cell previousIndex( Cell _indexes, int _action ) const;
+	Cell previousIndex( Cell _indexes, int _action ) const noexcept;
 
-	T * getBlock( int _blockIndex ) const;
+	T * getBlock( int _blockIndex ) const noexcept;
 
-	void deleteElement( T * _pElement );
+	void deleteElement( T * _pElement ) noexcept;
 
 	unsigned char ** allocateDirectory() const;
 
-	Cell calculateIndex( int _index ) const;
+	Cell calculateIndex( int _index ) const noexcept;
 
 	void allocateMemory();
 
@@ -100,7 +100,7 @@ public:
 
 	MyDeque( const MyDeque< T > & _deque );
 
-	MyDeque( MyDeque< T > && _deque );
+	MyDeque( MyDeque< T > && _deque ) noexcept;
 
 	~MyDeque();
 
@@ -110,11 +110,11 @@ public:
 
 	MyDeque< T > & operator = ( const MyDeque< T > & _deque );
 
-	MyDeque< T > & operator = ( MyDeque< T > && _deque );
+	MyDeque< T > & operator = ( MyDeque< T > && _deque ) noexcept;
 
-	bool operator == ( const MyDeque< T > & _deque ) const;
+	bool operator == ( const MyDeque< T > & _deque ) const noexcept;
 
-	bool operator != ( const MyDeque< T > & _deque ) const;
+	bool operator != ( const MyDeque< T > & _deque ) const noexcept;
 
 	/*------------------------------------------------------------------------------*/
 
@@ -148,11 +148,11 @@ public:
 
 	void shrink_to_fit();
 
-	int capacity() const;
+	int capacity() const noexcept;
 
-	std::size_t size() const;
+	std::size_t size() const noexcept;
 
-	bool empty() const;
+	bool empty() const noexcept;
 
 	void clear();
 
@@ -171,41 +171,41 @@ public:
 
 	public:
 
-		Iterator( Deque & _deque, unsigned int _currentPositon );
+		Iterator( Deque & _deque, unsigned int _currentPositon ) noexcept;
 
-		Iterator( const Iterator<Deque> & _it );
+		Iterator( const Iterator<Deque> & _it ) noexcept;
 
-		int getCurrentPosition() const;
-
-		/*--------------------------------------------------------------------------*/
-
-		bool operator == ( const Iterator<Deque> & _it ) const;
-
-		bool operator != ( const Iterator<Deque> & _it ) const;
-
-		bool operator >= ( const Iterator<Deque> & _it ) const;
-
-		bool operator <= ( const Iterator<Deque> & _it ) const;
-
-		bool operator > ( const Iterator<Deque> & _it ) const;
-
-		bool operator < ( const Iterator<Deque> & _it ) const;
+		int getCurrentPosition() const noexcept;
 
 		/*--------------------------------------------------------------------------*/
 
-		Iterator<Deque> operator + ( int _step ) const;
+		bool operator == ( const Iterator<Deque> & _it ) const noexcept;
 
-		Iterator<Deque> operator - ( int _step ) const;
+		bool operator != ( const Iterator<Deque> & _it ) const noexcept;
 
-		Iterator<Deque> & operator -= ( int _step );
+		bool operator >= ( const Iterator<Deque> & _it ) const noexcept;
 
-		Iterator<Deque> & operator += ( int _step );
+		bool operator <= ( const Iterator<Deque> & _it ) const noexcept;
+
+		bool operator > ( const Iterator<Deque> & _it ) const noexcept;
+
+		bool operator < ( const Iterator<Deque> & _it ) const noexcept;
 
 		/*--------------------------------------------------------------------------*/
 
-		Iterator<Deque> operator + ( const Iterator<Deque> & _it ) const;
+		Iterator<Deque> operator + ( int _step ) const noexcept;
 
-		Iterator<Deque> operator - ( const Iterator<Deque> & _it ) const;
+		Iterator<Deque> operator - ( int _step ) const noexcept;
+
+		Iterator<Deque> & operator -= ( int _step ) noexcept;
+
+		Iterator<Deque> & operator += ( int _step ) noexcept;
+
+		/*--------------------------------------------------------------------------*/
+
+		Iterator<Deque> operator + ( const Iterator<Deque> & _it ) const noexcept;
+
+		Iterator<Deque> operator - ( const Iterator<Deque> & _it ) const noexcept;
 
 		Iterator<Deque> & operator = ( const Iterator<Deque> & _it );
 
@@ -215,13 +215,13 @@ public:
 
 		/*--------------------------------------------------------------------------*/
 
-		Iterator<Deque> & operator ++ ();
+		Iterator<Deque> & operator ++ () noexcept;
 
-		Iterator<Deque> operator ++ ( int );
+		Iterator<Deque> operator ++ ( int ) noexcept;
 
-		Iterator<Deque> & operator -- ();
+		Iterator<Deque> & operator -- () noexcept;
 
-		Iterator<Deque> operator -- ( int );
+		Iterator<Deque> operator -- ( int ) noexcept;
 
 		/*--------------------------------------------------------------------------*/
 
@@ -246,13 +246,13 @@ public:
 	template< typename InputIt >
 	void insert( InputIt _itBegin, InputIt _itEnd, iterator _itWhere);
 
-	iterator begin();
+	iterator begin() noexcept;
 
-	iterator end();
+	iterator end() noexcept;
 
-	const_iterator cbegin() const;
+	const_iterator cbegin() const noexcept;
 
-	const_iterator cend() const;
+	const_iterator cend() const noexcept;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +269,7 @@ MyDeque< T >::MyDeque()
 
 template<typename T>
 MyDeque< T >::MyDeque( int _elementsEmount, T _element )
-	:MyDeque()
+	:	MyDeque()
 {
 	for ( int i = 0; i < _elementsEmount; i++ )
 		push_back( _element );
@@ -280,7 +280,7 @@ MyDeque< T >::MyDeque( int _elementsEmount, T _element )
 template< typename T >
 template< typename U >
 MyDeque< T >::MyDeque( std::initializer_list< U > _list )
-	:MyDeque()
+	:	MyDeque()
 {
 	for ( const U & x : _list )
 		this->push_back( x );
@@ -291,7 +291,7 @@ MyDeque< T >::MyDeque( std::initializer_list< U > _list )
 template< typename T >
 template< typename U >
 MyDeque< T >::MyDeque( const MyDeque< U > & _deque )
-	:MyDeque()
+	:	MyDeque()
 {
 	copyElements( _deque );
 }
@@ -300,7 +300,7 @@ MyDeque< T >::MyDeque( const MyDeque< U > & _deque )
 
 template< typename T >
 MyDeque< T >::MyDeque( const MyDeque< T > & _deque )
-	:MyDeque()
+	:	MyDeque()
 {
 	copyElements( _deque );
 }
@@ -308,12 +308,12 @@ MyDeque< T >::MyDeque( const MyDeque< T > & _deque )
 /**************************************************************************************************************/
 
 template< typename T >
-MyDeque< T >::MyDeque( MyDeque< T > && _deque )
-	:m_directorySize( _deque.m_directorySize ),
-	m_backIndex( _deque.m_backIndex ),
-	m_frontIndex( _deque.m_frontIndex ),
-	m_backBlockIndex( _deque.m_backBlockIndex ),
-	m_frontBlockIndex( _deque.m_frontBlockIndex )
+MyDeque< T >::MyDeque( MyDeque< T > && _deque ) noexcept
+	:	m_directorySize( _deque.m_directorySize )
+	,	m_backIndex( _deque.m_backIndex )
+	,	m_frontIndex( _deque.m_frontIndex )
+	,	m_backBlockIndex( _deque.m_backBlockIndex )
+	,	m_frontBlockIndex( _deque.m_frontBlockIndex )
 {
 	m_data = _deque.m_data;
 
@@ -368,7 +368,7 @@ MyDeque< T > & MyDeque< T >::operator = ( const MyDeque< T > & _deque )
 /**************************************************************************************************************/
 
 template< typename T >
-MyDeque< T > & MyDeque< T >::operator = ( MyDeque< T > && _deque )
+MyDeque< T > & MyDeque< T >::operator = ( MyDeque< T > && _deque ) noexcept
 {
 	if ( this == &_deque )
 		return *this;
@@ -384,7 +384,7 @@ MyDeque< T > & MyDeque< T >::operator = ( MyDeque< T > && _deque )
 /**************************************************************************************************************/
 
 template< typename T >
-bool MyDeque< T >::operator == ( const MyDeque< T > & _deque ) const
+bool MyDeque< T >::operator == ( const MyDeque< T > & _deque ) const noexcept
 {
 	int size = this->size();
 
@@ -401,7 +401,7 @@ bool MyDeque< T >::operator == ( const MyDeque< T > & _deque ) const
 /**************************************************************************************************************/
 
 template< typename T >
-bool MyDeque< T >::operator != ( const MyDeque< T > & _deque ) const
+bool MyDeque< T >::operator != ( const MyDeque< T > & _deque ) const noexcept
 {
 	return !( *this == _deque );
 }
@@ -482,7 +482,7 @@ void MyDeque< T >::clear()
 /**************************************************************************************************************/
 
 template< typename T >
-bool MyDeque< T >::empty() const
+bool MyDeque< T >::empty() const noexcept
 {
 	return size() == 0;
 }
@@ -490,7 +490,7 @@ bool MyDeque< T >::empty() const
 /**************************************************************************************************************/
 
 template< typename T >
-std::size_t MyDeque< T >::size() const
+std::size_t MyDeque< T >::size() const noexcept
 {
 	if( m_frontBlockIndex == m_backBlockIndex )
 	{
@@ -612,24 +612,17 @@ T & MyDeque< T >::at( int _index )
 template< typename T >
 void MyDeque< T >::grow()
 {
-	auto allocatedBlocks = getAllocatedBlocksIndexes();
-
 	m_directorySize *= 2;
 	unsigned char ** newDirectory = allocateDirectory();
 
-	int diffFront = m_frontBlockIndex - allocatedBlocks.m_frontIndex;
-	int diffBack = allocatedBlocks.m_backIndex - m_backBlockIndex;
-	int delta = m_directorySize / 2 - ( allocatedBlocks.m_backIndex - allocatedBlocks.m_frontIndex + 1 ) / 2;
-
-	int counter = delta;
-	for( int i{ allocatedBlocks.m_frontIndex }; i <= allocatedBlocks.m_backIndex; i++ )
+	int delta = m_directorySize / 4; // we need a half 
+	for( int i{ 0 }; i < m_directorySize / 2; i++ )
 	{
-		newDirectory[counter] = m_data[i];
-		counter++;
+		newDirectory[delta + i] = m_data[i];
 	}
 
-	m_frontBlockIndex = delta + diffFront;
-	m_backBlockIndex = counter - 1 - diffBack;
+	m_frontBlockIndex = delta + m_frontBlockIndex;
+	m_backBlockIndex = delta + m_backBlockIndex;
 
 	delete[] m_data;
 	m_data = newDirectory;
@@ -640,11 +633,9 @@ void MyDeque< T >::grow()
 template< typename T >
 void MyDeque< T >::shrink_to_fit()
 {
-	auto allocatedBlocks = getAllocatedBlocksIndexes();
-
-	for( int i{ allocatedBlocks.m_frontIndex }; i < m_frontBlockIndex; i++ )
+	for( int i{ 0 }; i < m_frontBlockIndex; ++i )
 		delete[] m_data[i];
-	for( int i{ allocatedBlocks.m_backIndex }; i > m_backBlockIndex; i-- )
+	for( int i{ m_backBlockIndex + 1 }; i < m_directorySize; ++i )
 		delete[] m_data[i];
 
 	m_directorySize = m_backBlockIndex - m_frontBlockIndex + 1;
@@ -667,7 +658,7 @@ void MyDeque< T >::shrink_to_fit()
 /**************************************************************************************************************/
 
 template<typename T>
-int MyDeque< T >::capacity() const
+int MyDeque< T >::capacity() const noexcept
 {
 	auto allocatedBlocks = getAllocatedBlocksIndexes();
 
@@ -677,7 +668,7 @@ int MyDeque< T >::capacity() const
 /**************************************************************************************************************/
 
 template< typename T >
-Cell MyDeque< T >::nextIndex( Cell _indexes, int _action ) const
+Cell MyDeque< T >::nextIndex( Cell _indexes, int _action ) const noexcept
 {
 	assert( _indexes.m_elementIndex >= 0 );
 	assert( _indexes.m_elementIndex <= m_blockSize );
@@ -696,7 +687,7 @@ Cell MyDeque< T >::nextIndex( Cell _indexes, int _action ) const
 /**************************************************************************************************************/
 
 template< typename T >
-Cell MyDeque< T >::previousIndex( Cell _indexes, int _action ) const
+Cell MyDeque< T >::previousIndex( Cell _indexes, int _action ) const noexcept
 {
 	assert( _indexes.m_elementIndex >= 0 );
 	assert( _indexes.m_elementIndex <= m_blockSize );
@@ -725,7 +716,7 @@ void MyDeque< T >::resetData()
 /**************************************************************************************************************/
 
 template<typename T>
-void MyDeque< T >::resetIndexes()
+void MyDeque< T >::resetIndexes() noexcept
 {
 	m_directorySize = 2;
 
@@ -756,9 +747,7 @@ void MyDeque< T >::freeMemoryBlocks()
 	if( !m_data )
 		return;
 
-	auto allocatedBlocks = getAllocatedBlocksIndexes();
-
-	for( int i{ allocatedBlocks.m_frontIndex }; i <= allocatedBlocks.m_backIndex; i++ )
+	for( int i{ 0 }; i < m_directorySize; i++ )
 		delete[] m_data[i];
 
 	delete[] m_data;
@@ -767,7 +756,7 @@ void MyDeque< T >::freeMemoryBlocks()
 /**************************************************************************************************************/
 
 template<typename T>
-inline bool MyDeque<T>::isValidIndex( int _index ) const
+inline bool MyDeque<T>::isValidIndex( int _index ) const noexcept
 {
 	return ( _index >= 0 ) && ( _index < size() );
 }
@@ -786,7 +775,7 @@ void MyDeque< T >::copyElements( const MyDeque< U > & _deque )
 /**************************************************************************************************************/
 
 template< typename T >
-typename MyDeque< T >::iterator MyDeque< T >::begin()
+typename MyDeque< T >::iterator MyDeque< T >::begin() noexcept
 {
 	iterator it( *this, 0 );
 	return it;
@@ -795,7 +784,7 @@ typename MyDeque< T >::iterator MyDeque< T >::begin()
 /**************************************************************************************************************/
 
 template< typename T >
-typename MyDeque< T >::iterator MyDeque< T >::end()
+typename MyDeque< T >::iterator MyDeque< T >::end() noexcept
 {
 	iterator it( *this, size() );
 	return it;
@@ -804,7 +793,7 @@ typename MyDeque< T >::iterator MyDeque< T >::end()
 /**************************************************************************************************************/
 
 template< typename T >
-typename MyDeque< T >::const_iterator MyDeque< T >::cbegin() const
+typename MyDeque< T >::const_iterator MyDeque< T >::cbegin() const noexcept
 {
 	const_iterator it( *this, 0 );
 	return it;
@@ -813,7 +802,7 @@ typename MyDeque< T >::const_iterator MyDeque< T >::cbegin() const
 /**************************************************************************************************************/
 
 template< typename T >
-typename MyDeque< T >::const_iterator MyDeque< T >::cend() const
+typename MyDeque< T >::const_iterator MyDeque< T >::cend() const noexcept
 {
 	const_iterator it( *this, size() );
 	return it;
@@ -872,7 +861,7 @@ void MyDeque< T >::erase( iterator _itBegin, iterator _itEnd )
 		--_itBegin;
 
 		for ( ; _itBegin.getCurrentPosition() >= 0; --_itBegin, --_itEnd )
-			*_itEnd = std::move( *_itBegin );
+			*_itEnd = std::move_if_noexcept( *_itBegin );
 
 		int difference = _itEnd.getCurrentPosition() - _itBegin.getCurrentPosition();
 		for ( int i{ 0 }; i < difference; ++i )
@@ -883,7 +872,7 @@ void MyDeque< T >::erase( iterator _itBegin, iterator _itEnd )
 		++_itEnd;
 
 		for ( ; _itEnd.getCurrentPosition() <= lastIndex; ++_itBegin, ++_itEnd )
-			*_itBegin = std::move( *_itEnd );
+			*_itBegin = std::move_if_noexcept( *_itEnd );
 
 		int difference = _itEnd.getCurrentPosition() - _itBegin.getCurrentPosition();
 		for ( int i{ 0 }; i < difference; ++i )
@@ -912,17 +901,17 @@ void MyDeque< T >::insert( iterator _it, const T & _element )
 		iterator itNext = itCurrent - 1;
 
 		for ( ; itCurrent != _it; --itNext, --itCurrent )
-			*itCurrent = std::move( *itNext );
+			*itCurrent = std::move_if_noexcept( *itNext );
 	}
 	else
 	{
 		iterator itCurrent = begin();
-		new( getBlock( m_frontBlockIndex ) + m_frontIndex ) T( std::move( *itCurrent ) );
+		new( getBlock( m_frontBlockIndex ) + m_frontIndex ) T( std::move_if_noexcept( *itCurrent ) );
 
 		iterator itNext = itCurrent + 1;
 
 		for ( ; itCurrent != _it;  ++itNext, ++itCurrent )
-			*itCurrent = std::move( *itNext );
+			*itCurrent = std::move_if_noexcept( *itNext );
 
 		Cell newIndexes = previousIndex( Cell{ m_frontBlockIndex, m_frontIndex }, actions::REDUCE );
 		m_frontBlockIndex = newIndexes.m_blockIndex;
@@ -946,7 +935,7 @@ void MyDeque< T >::insert( InputIt _itBegin, InputIt _itEnd, iterator _itWhere )
 /**************************************************************************************************************/
 
 template< typename T >
-Cell MyDeque< T >::calculateIndex( int _index ) const
+Cell MyDeque< T >::calculateIndex( int _index ) const noexcept
 {
 	Cell result;
 	if ( _index < m_blockSize - ( m_frontIndex + 1 ) )
@@ -983,24 +972,22 @@ void MyDeque< T >::allocateMemory()
 template<typename T>
 AllocatedBlocksIndexes MyDeque< T >::getAllocatedBlocksIndexes() const
 {
-	AllocatedBlocksIndexes result;
-	result.m_frontIndex = m_frontBlockIndex; // for case using empty deque
-	result.m_backIndex = m_directorySize - 1; // for cases when the pointer at the end of m_data is not nullptr
+	AllocatedBlocksIndexes result{ 0, -1 }; // -1 for correct working with empty deque
 
-	bool foundFirstIndex = false;
-
+	bool foundFirstAllocatedBlock = false;
 	for( int i{ 0 }; i < m_directorySize; ++i )
 	{
-		if( !foundFirstIndex && m_data[i] )
+		if( !foundFirstAllocatedBlock && m_data[i] )
 		{
-			foundFirstIndex = true;
+			foundFirstAllocatedBlock = true;
 			result.m_frontIndex = i;
 		}
-		else if( foundFirstIndex && !m_data[i] )
+		else if( foundFirstAllocatedBlock && m_data[i] )
 		{
 			result.m_backIndex = i;
-			break;
 		}
+		else
+			break;
 	}
 
 	return result;
@@ -1017,7 +1004,7 @@ void MyDeque< T >::allocateBlock( int _blockIndex )
 /**************************************************************************************************************/
 
 template< typename T >
-inline T * MyDeque< T >::getBlock( int _blockIndex ) const
+inline T * MyDeque< T >::getBlock( int _blockIndex ) const noexcept
 {
 	return reinterpret_cast< T* >( m_data[_blockIndex] );
 }
@@ -1025,7 +1012,7 @@ inline T * MyDeque< T >::getBlock( int _blockIndex ) const
 /**************************************************************************************************************/
 
 template<typename T>
-inline void MyDeque< T >::deleteElement( T * _pElement )
+inline void MyDeque< T >::deleteElement( T * _pElement ) noexcept
 {
 	if constexpr ( std::is_class< T >::value )
 		_pElement->~T();
@@ -1048,7 +1035,7 @@ unsigned char ** MyDeque<T>::allocateDirectory() const
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque >::Iterator( Deque & _deque, unsigned int _currentPositon )
+MyDeque< T >::Iterator< Deque >::Iterator( Deque & _deque, unsigned int _currentPositon ) noexcept
 	:m_deque( _deque ), m_currentPosition( _currentPositon )
 {
 }
@@ -1057,8 +1044,9 @@ MyDeque< T >::Iterator< Deque >::Iterator( Deque & _deque, unsigned int _current
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque >::Iterator( const Iterator<Deque> & _it )
-	:m_deque( _it.m_deque ), m_currentPosition( _it.m_currentPosition )
+MyDeque< T >::Iterator< Deque >::Iterator( const Iterator<Deque> & _it ) noexcept
+	:	m_deque( _it.m_deque )
+	,	m_currentPosition( _it.m_currentPosition )
 {
 }
 
@@ -1066,7 +1054,7 @@ MyDeque< T >::Iterator< Deque >::Iterator( const Iterator<Deque> & _it )
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator == ( const Iterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator == ( const Iterator< Deque > & _it ) const noexcept
 {
 	bool result = ( m_currentPosition == _it.m_currentPosition ) &&
 		( ( const void * )&m_deque == ( const void * )&_it.m_deque );
@@ -1078,7 +1066,7 @@ bool MyDeque< T >::Iterator< Deque >::operator == ( const Iterator< Deque > & _i
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator != ( const Iterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator != ( const Iterator< Deque > & _it ) const noexcept
 {
 	return !( *this == _it );
 }
@@ -1087,7 +1075,7 @@ bool MyDeque< T >::Iterator< Deque >::operator != ( const Iterator< Deque > & _i
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator >= ( const Iterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator >= ( const Iterator< Deque > & _it ) const noexcept
 {
 	return m_currentPosition >= _it.m_currentPosition;
 }
@@ -1096,7 +1084,7 @@ bool MyDeque< T >::Iterator< Deque >::operator >= ( const Iterator< Deque > & _i
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator <= ( const Iterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator <= ( const Iterator< Deque > & _it ) const noexcept
 {
 	return m_currentPosition <= _it.m_currentPosition;
 }
@@ -1105,7 +1093,7 @@ bool MyDeque< T >::Iterator< Deque >::operator <= ( const Iterator< Deque > & _i
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator > ( const Iterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator > ( const Iterator< Deque > & _it ) const noexcept
 {
 	return m_currentPosition > _it.m_currentPosition;
 }
@@ -1114,7 +1102,7 @@ bool MyDeque< T >::Iterator< Deque >::operator > ( const Iterator< Deque > & _it
 
 template< typename T >
 template< class Deque >
-bool MyDeque< T >::Iterator< Deque >::operator < ( const Iterator< Deque > & _it ) const
+bool MyDeque< T >::Iterator< Deque >::operator < ( const Iterator< Deque > & _it ) const noexcept
 {
 	return m_currentPosition < _it.m_currentPosition;
 }
@@ -1123,7 +1111,7 @@ bool MyDeque< T >::Iterator< Deque >::operator < ( const Iterator< Deque > & _it
 
 template< typename T >
 template < class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( int _step ) const
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( int _step ) const noexcept
 {
 	//assert(m_currentPosition + _step < m_deque.size());
 
@@ -1136,7 +1124,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( in
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( int _step ) const
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( int _step ) const noexcept
 {
 	//assert(m_currentPosition - _step >= 0);
 
@@ -1149,7 +1137,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( in
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( const Iterator< Deque > & _it ) const
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( const Iterator< Deque > & _it ) const noexcept
 {
 	//assert( (m_currentPosition + _it.m_currentPosition) < m_deque.size());
 
@@ -1162,7 +1150,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator + ( co
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( const Iterator< Deque > & _it ) const
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator - ( const Iterator< Deque > & _it ) const noexcept
 {
 	//assert(m_currentPosition - _it.m_currentPosition >= 0);
 
@@ -1209,7 +1197,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += (
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= ( int _step )
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= ( int _step ) noexcept
 {
 	m_currentPosition -= _step;
 	return *this;
@@ -1219,7 +1207,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -= (
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += ( int _step )
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += ( int _step ) noexcept
 {
 	m_currentPosition += _step;
 
@@ -1230,7 +1218,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator += (
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator ++ ()
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator ++ () noexcept
 {
 	//assert(m_currentPosition < m_deque.size());
 
@@ -1243,7 +1231,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator ++ (
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator ++ ( int )
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator ++ ( int ) noexcept
 {
 	//assert(m_currentPosition < m_deque.size());
 
@@ -1257,7 +1245,7 @@ MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator ++ ( i
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -- ()
+MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -- () noexcept
 {
 	//assert(m_currentPosition > 0);
 
@@ -1270,7 +1258,7 @@ MyDeque< T >::Iterator< Deque > & MyDeque< T >::Iterator< Deque >::operator -- (
 
 template< typename T >
 template< class Deque >
-MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator -- ( int )
+MyDeque< T >::Iterator< Deque > MyDeque< T >::Iterator< Deque >::operator -- ( int ) noexcept
 {
 	//assert(m_currentPosition > 0);
 
@@ -1303,7 +1291,7 @@ T & MyDeque< T >::Iterator< Deque >::operator *()
 
 template< typename T >
 template< class Deque >
-int MyDeque< T >::Iterator< Deque >::getCurrentPosition() const
+int MyDeque< T >::Iterator< Deque >::getCurrentPosition() const noexcept
 {
 	return m_currentPosition;
 }

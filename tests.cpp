@@ -754,11 +754,16 @@ DECLARE_OOP_TEST( shrink_to_fit )
 
 	test.shrink_to_fit();
 	assert( test.size() == 98 );
-	assert( test.capacity() == 100 ); // capacity == size - 2 because of those 2 indexes, which are set for writing
+	assert( test.capacity() == 100 );
 
+	test.push_back( 1 );
+	assert( test.size() == 99 );
+	assert( test.capacity() == 100 );
+
+	// check for correct work after shrinking
 	for( int i = 0; i < 102; i++ )
 		test.push_back( 1 );
 
 	for( int i{ 0 }; i < 200; ++i )
-		assert( test[i] == 1 ); // check for correct work after shrinking
+		assert( test[i] == 1 );
 }
