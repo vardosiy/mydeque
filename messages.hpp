@@ -1,11 +1,15 @@
-#ifndef _MESSAGES_HPP_
-#define _MESSAGES_HPP_
+#ifndef __MESSAGES_HPP__
+#define __MESSAGES_HPP__
+
+/*----------------------------------------------------------------------------*/
 
 namespace Messages
 {
-	const char * const EmptyDeque = "Deque is empty";
-	const char * const InvalidIndex = "Invalid index";
-	const char * const InvalidIterator = "Invalid iterator";
+	constexpr char * const EmptyDeque = "Deque is empty";
+	constexpr char * const InvalidIndex = "Invalid index";
+	constexpr char * const InvalidIterator = "Invalid iterator";
 }
 
-#endif // !_MESSAGES_HPP
+/*----------------------------------------------------------------------------*/
+
+#endif // !__MESSAGES_HPP__
