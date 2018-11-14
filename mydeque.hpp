@@ -528,8 +528,8 @@ const T & MyDeque< T >::front() const
 	if ( empty() )
 		throw std::logic_error( Messages::EmptyDeque );
 
-	Cell resultIndexes = nextIndex( Cell{  m_frontBlockIndex, m_frontIndex }, actions::INCREASE );
-	T * result = getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex;
+	Cell resultIndexes{ nextIndex( Cell{ m_frontBlockIndex, m_frontIndex }, actions::INCREASE ) };
+	T * result{ getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex };
 
 	return *result;
 }
@@ -542,8 +542,8 @@ const T & MyDeque< T >::back() const
 	if ( empty() )
 		throw std::logic_error( Messages::EmptyDeque );
 
-	Cell resultIndexes = previousIndex( Cell{ m_backBlockIndex, m_backIndex }, actions::REDUCE );
-	T * result = getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex;
+	Cell resultIndexes{ previousIndex( Cell{ m_backBlockIndex, m_backIndex }, actions::REDUCE ) };
+	T * result{ getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex };
 
 	return *result;
 }
@@ -556,8 +556,8 @@ T & MyDeque< T >::front()
 	if ( empty() )
 		throw std::logic_error( Messages::EmptyDeque );
 
-	Cell resultIndexes = nextIndex( Cell{ m_frontBlockIndex, m_frontIndex }, actions::INCREASE );
-	T * result = getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex;
+	Cell resultIndexes{ nextIndex( Cell{ m_frontBlockIndex, m_frontIndex }, actions::INCREASE ) };
+	T * result{ getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex };
 
 	return *result;
 }
@@ -570,8 +570,8 @@ T & MyDeque< T >::back()
 	if ( empty() )
 		throw std::logic_error( Messages::EmptyDeque );
 
-	Cell resultIndexes = previousIndex( Cell{ m_backBlockIndex, m_backIndex }, actions::REDUCE );
-	T * result = getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex;
+	Cell resultIndexes{ previousIndex( Cell{ m_backBlockIndex, m_backIndex }, actions::REDUCE ) };
+	T * result{ getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex };
 
 	return *result;
 }
@@ -581,8 +581,8 @@ T & MyDeque< T >::back()
 template< typename T >
 const T & MyDeque< T >::operator [] ( int _index ) const
 {
-	Cell resultIndexes = calculateIndex( _index );
-	T * result = getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex;
+	Cell resultIndexes{ calculateIndex( _index ) };
+	T * result{ getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex };
 
 	return *result;
 }
@@ -592,8 +592,8 @@ const T & MyDeque< T >::operator [] ( int _index ) const
 template< typename T >
 T & MyDeque< T >::operator [] ( int _index )
 {
-	Cell resultIndexes = calculateIndex( _index );
-	T * result = getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex;
+	Cell resultIndexes{ calculateIndex( _index ) };
+	T * result{ getBlock( resultIndexes.m_blockIndex ) + resultIndexes.m_elementIndex };
 
 	return *result;
 }
@@ -606,7 +606,7 @@ const T & MyDeque< T >::at( int _index ) const
 	if ( !isValid( _index ) )
 		throw std::logic_error( Messages::InvalidIndex );
 
-	return ( *this )[_index];
+	return ( *this )[ _index ];
 }
 
 /*----------------------------------------------------------------------------*/
@@ -617,7 +617,7 @@ T & MyDeque< T >::at( int _index )
 	if ( !isValidIndex( _index ) )
 		throw std::logic_error( Messages::InvalidIndex );
 
-	return ( *this )[_index];
+	return ( *this )[ _index ];
 }
 
 /*----------------------------------------------------------------------------*/
@@ -628,10 +628,10 @@ void MyDeque< T >::grow()
 	m_directorySize *= 2;
 	unsigned char ** newDirectory = allocateDirectory();
 
-	int delta = m_directorySize / 4; // we need a half 
+	int delta = m_directorySize / 4; // we need a half of previous size
 	for( int i{ 0 }; i < m_directorySize / 2; i++ )
 	{
-		newDirectory[delta + i] = m_data[i];
+		newDirectory[ delta + i ] = m_data[ i ];
 	}
 
 	m_frontBlockIndex = delta + m_frontBlockIndex;
@@ -647,17 +647,17 @@ template< typename T >
 void MyDeque< T >::shrink_to_fit()
 {
 	for( int i{ 0 }; i < m_frontBlockIndex; ++i )
-		delete[] m_data[i];
+		delete[] m_data[ i ];
 	for( int i{ m_backBlockIndex + 1 }; i < m_directorySize; ++i )
-		delete[] m_data[i];
+		delete[] m_data[ i ];
 
 	m_directorySize = m_backBlockIndex - m_frontBlockIndex + 1;
 	int counter = m_frontBlockIndex;
 
-	unsigned char ** shrinked_data = new unsigned char*[m_directorySize];
+	unsigned char ** shrinked_data = new unsigned char*[ m_directorySize ];
 	for ( int i{ 0 }; i < m_directorySize; ++i )
 	{
-		shrinked_data[i] = m_data[counter];
+		shrinked_data[ i ] = m_data[ counter ];
 		++counter;
 	}
 
@@ -678,12 +678,12 @@ int MyDeque< T >::capacity() const noexcept
 	bool foundFirstAllocatedBlock = false;
 	for ( int i{ 0 }; i < m_directorySize; ++i )
 	{
-		if ( !foundFirstAllocatedBlock && m_data[i] )
+		if ( !foundFirstAllocatedBlock && m_data[ i ] )
 		{
 			foundFirstAllocatedBlock = true;
 			result.m_frontIndex = i;
 		}
-		else if ( foundFirstAllocatedBlock && m_data[i] )
+		else if ( foundFirstAllocatedBlock && m_data[ i ] )
 		{
 			result.m_backIndex = i;
 		}
@@ -777,7 +777,7 @@ void MyDeque< T >::freeMemoryBlocks()
 		return;
 
 	for( int i{ 0 }; i < m_directorySize; i++ )
-		delete[] m_data[i];
+		delete[] m_data[ i ];
 
 	delete[] m_data;
 }
@@ -798,7 +798,7 @@ void MyDeque< T >::copyElements( const MyDeque< U > & _deque )
 {
 	int size = _deque.size();
 	for ( int i{ 0 }; i < size; i++ )
-		push_back( _deque[i] );
+		push_back( _deque[ i ] );
 }
 
 /*----------------------------------------------------------------------------*/
@@ -1009,7 +1009,7 @@ void MyDeque< T >::allocateBlock( int _blockIndex )
 template< typename T >
 inline T * MyDeque< T >::getBlock( int _blockIndex ) const noexcept
 {
-	return reinterpret_cast<T*>(m_data[ _blockIndex ]);
+	return reinterpret_cast< T * >( m_data[ _blockIndex ] );
 }
 
 /*----------------------------------------------------------------------------*/
@@ -1261,7 +1261,7 @@ template< typename T >
 	template< class Deque >
 const T & MyDeque< T >::Iterator< Deque >::operator *() const
 {
-	return m_deque[m_currentPosition];
+	return m_deque[ m_currentPosition ];
 }
 
 /*----------------------------------------------------------------------------*/
@@ -1271,7 +1271,7 @@ template< typename T >
 		template< typename >
 T & MyDeque< T >::Iterator< Deque >::operator *()
 {
-	return m_deque[m_currentPosition];
+	return m_deque[ m_currentPosition] ;
 }
 
 /*----------------------------------------------------------------------------*/
